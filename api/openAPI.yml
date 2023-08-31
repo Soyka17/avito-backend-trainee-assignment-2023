@@ -1,0 +1,316 @@
+openapi: 3.0.3
+info:
+  title: avito-backend-trainee-assignment-2023
+
+  version: 2023.1.0
+
+
+tags:
+  - name: Users
+    description: Ручки для работы с пользователями
+  - name: Segments
+    description: Ручки для работы с сегментами
+  - name: Other
+    description: Остальные ручки
+
+paths:
+
+  /user/new:
+    get:
+      tags:
+        - Users
+      summary: Ручка на создание пользователей
+
+      responses:
+        '201':
+          description: New user with id=3 succesfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUserResponse'
+
+
+  /user/{uid}:
+    get:
+      tags:
+        - Users
+      summary: Ручка на получение активных сегментов пользователя
+
+      parameters:
+        - name: uid
+          in: path
+          required: true
+          schema:
+            type: integer
+
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserActiveSegmentsResponse'
+
+
+
+  /user/update:
+    post:
+      tags:
+        - Users
+      summary: Ручка для обновления сегментов пользователя
+
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserSegmentRequest'
+
+      responses:
+        '201':
+          description: Все сегменты успешно обработаны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUserSegmentResponseOk'
+
+        '400':
+          description: Один или более сегмент не был успешно обработан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUserSegmentResponseBad'
+
+  /segment/new:
+    post:
+      tags:
+        - Segments
+      summary: Ручка для создания сегментов
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Slug'
+
+      responses:
+        '201':
+          description: Все сегменты успешно обработаны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreteSegmentResponseOk'
+
+        '400':
+          description: Один или более сегмент не был успешно обработан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreteSegmentResponseBad'
+
+  /segment/delete:
+    post:
+      tags:
+        - Segments
+      summary: Ручка для удаления сегментов
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Slug'
+
+      responses:
+        '201':
+          description: Все сегменты успешно обработаны
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteSegmentOk'
+
+        '400':
+          description: Один или более сегмент не был успешно обработан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteSegmentBad'
+
+  /deadline:
+    post:
+      tags:
+        - Other
+      summary: Ручка для автоматического удаления пользователя из сегмента
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeadlineReq'
+
+      responses:
+        '201':
+          description: Дедлайн установлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeadlineResp'
+
+
+
+components:
+  schemas:
+
+    CreateUserResponse:
+      properties:
+        message:
+          type: string
+          example: "New user with id=1 succesfully created"
+
+
+
+    UserActiveSegmentsResponse:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        active_segments:
+          type: array
+          items:
+            properties:
+              id:
+                type: integer
+                example: 2
+              slug:
+                type: string
+                example: "AVITO_EASY_129R"
+              begin_date:
+                type: string
+                example: "2023-08-31T22:46:31Z"
+              end_date:
+                type: string
+                example: "2023-08-31T23:46:31Z"
+
+    UpdateUserSegmentRequest:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        new:
+          type: array
+          items:
+            type: string
+            example: "AVITO_EASY_129R"
+        remove:
+          type: array
+          items:
+            type: string
+            example: "AVITO_HARD_129R"
+
+    UpdateUserSegmentResponseOk:
+      type: object
+      properties:
+        ok_bind:
+          type: array
+          items:
+            type: string
+            example: "AVITO_EASY_129R"
+        ok_unbind:
+          type: array
+          items:
+            type: string
+            example: "AVITO_HARD_129R"
+        not_bind:
+          type: array
+          items:
+            type: string
+            example: null
+        not_unbind:
+          type: array
+          items:
+            type: string
+            example: null
+
+    UpdateUserSegmentResponseBad:
+      type: object
+      properties:
+        ok_bind:
+          type: array
+          items:
+            type: string
+            example: null
+        ok_unbind:
+          type: array
+          items:
+            type: string
+            example: "AVITO_HARD_129R"
+        not_bind:
+          type: array
+          items:
+            type: object
+            properties:
+              AVITO_EASY_129R:
+                type: string
+                example: "The user is missing a segment or the segment is already unbinded"
+        not_unbind:
+          type: array
+          items:
+            type: string
+            example: null
+
+
+    Slug:
+      type: object
+      properties:
+        slug:
+          type: string
+          example: "AVITO_EASY_129R"
+
+    CreteSegmentResponseOk:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "New segment AVITO_EASY_129R succesfully created"
+    CreteSegmentResponseBad:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "AVITO_EASY_129R segment already exist"
+
+    DeleteSegmentOk:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "AVITO_EASY_129R segment succesfully deleted"
+    DeleteSegmentBad:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "AVITO_EASY_129R segment not found"
+
+    DeadlineReq:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        slug:
+          type: string
+          example: "AVITO_EASY_129R"
+        deadline:
+          type: string
+          example: "2023-08-31 13:39:00"
+
+    DeadlineResp:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Deadline successfully set"
+
+
