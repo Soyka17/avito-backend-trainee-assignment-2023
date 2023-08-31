@@ -1,7 +1,6 @@
 openapi: 3.0.3
 info:
   title: avito-backend-trainee-assignment-2023
-
   version: 2023.1.0
 
 
@@ -28,7 +27,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateUserResponse'
-
 
   /user/{uid}:
     get:
@@ -155,18 +153,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/DeadlineResp'
 
+  /user/history:
+    post:
+      tags:
+        - Users
+      summary: Ручка для получения ссылки на отчет по изменениям сегмента у пользователя
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportReq'
+
+      responses:
+        '201':
+          description: Дедлайн установлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResp'
+
 
 
 components:
   schemas:
-
     CreateUserResponse:
       properties:
         message:
           type: string
           example: "New user with id=1 succesfully created"
-
-
 
     UserActiveSegmentsResponse:
       type: object
@@ -259,7 +274,6 @@ components:
             type: string
             example: null
 
-
     Slug:
       type: object
       properties:
@@ -313,4 +327,26 @@ components:
           type: string
           example: "Deadline successfully set"
 
+    ReportReq:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        slug:
+          type: string
+          example: "AVITO_EASY_129R"
+        before:
+          type: string
+          example: "2022-07-31 00:00:00"
+        after:
+          type: string
+          example: "2023-08-31 23:59:59"
+
+    ReportResp:
+      type: object
+      properties:
+        report:
+          type: string
+          example: "localhost:8080/reports/1_AVITO_EASY_129R_2023-08-31_21:35:18"
 
